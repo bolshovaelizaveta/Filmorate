@@ -1,119 +1,71 @@
 package ru.yandex.practicum.controller;
 
+import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
-import ru.yandex.practicum.exception.ValidationException;
 import ru.yandex.practicum.model.User;
+import ru.yandex.practicum.service.UserService;
 
-import jakarta.validation.Valid;
-import java.time.LocalDate;
 import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.List;
 
 @RestController
 @RequestMapping("/users")
 @Slf4j
+@RequiredArgsConstructor
 public class UserController {
 
-    private final Map<Long, User> users = new HashMap<>();
-    private long nextId = 1;
-
-    private long getNextId() {
-        return nextId++;
-    }
-
-    private void validateUser(User user) {
-
-        if (user.getLogin() == null || user.getLogin().isBlank() || user.getLogin().contains(" ")) {
-            log.warn("Валидация пользователя не пройдена: Логин пустой или содержит пробелы. Пользователь: {}", user);
-            throw new ValidationException("Логин не может быть пустым и содержать пробелы.");
-        }
-
-        if (user.getBirthday().isAfter(LocalDate.now())) {
-            log.warn("Валидация пользователя не пройдена: Дата рождения в будущем. Пользователь: {}", user);
-            throw new ValidationException("Дата рождения не может быть в будущем.");
-        }
-
-        if (user.getEmail() == null || user.getEmail().isBlank() || !user.getEmail().contains("@")) {
-            log.warn("Валидация пользователя не пройдена: Email пустой или не содержит '@'. Пользователь: {}", user);
-            throw new ValidationException("Электронная почта не может быть пустой и должна содержать символ '@'.");
-        }
-    }
+    private final UserService userService;
 
     @GetMapping
     public Collection<User> findAll() {
-        log.info("Получен запрос GET /users. Количество пользователей: {}", users.size());
-        return users.values();
+        log.info("Получен запрос GET /users");
+        return userService.findAll();
+    }
+
+    @GetMapping("/{id}")
+    public User findById(@PathVariable long id) {
+        log.info("Получен запрос GET /users/{}", id);
+        return userService.findById(id);
     }
 
     @PostMapping
     public User create(@Valid @RequestBody User user) {
-        log.info("Получен запрос POST /users. Попытка создать пользователя: {}", user);
-        validateUser(user);
-
-        boolean isEmailDuplicated = users.values().stream()
-                .anyMatch(u -> u.getEmail().equalsIgnoreCase(user.getEmail()));
-        if (isEmailDuplicated) {
-            log.warn("Валидация создания пользователя не пройдена: Этот email уже используется. Пользователь: {}", user);
-            throw new ValidationException("Этот имейл уже используется.");
-        }
-
         if (user.getName() == null || user.getName().isBlank()) {
             user.setName(user.getLogin());
         }
-
-        user.setId(getNextId());
-
-        users.put(user.getId(), user);
-        log.info("Пользователь успешно создан: {}", user);
-        return user;
+        log.info("Получен запрос POST /users с телом: {}", user);
+        return userService.create(user);
     }
 
     @PutMapping
     public User update(@Valid @RequestBody User user) {
-        log.info("Получен запрос PUT /users. Попытка обновить пользователя: {}", user);
-        if (user.getId() == 0 || !users.containsKey(user.getId())) {
-            log.warn("Валидация обновления пользователя не пройдена: Пользователь с ID {} не найден.", user.getId());
-            throw new ValidationException("Пользователь с таким ID не найден.");
-        }
+        log.info("Получен запрос PUT /users с телом: {}", user);
+        return userService.update(user);
+    }
 
-        validateUser(user);
+    @PutMapping("/{id}/friends/{friendId}")
+    public void addFriend(@PathVariable long id, @PathVariable long friendId) {
+        log.info("Получен запрос PUT /users/{}/friends/{}", id, friendId);
+        userService.addFriend(id, friendId);
+    }
 
-        User existingUser = users.get(user.getId());
+    @DeleteMapping("/{id}/friends/{friendId}")
+    public void removeFriend(@PathVariable long id, @PathVariable long friendId) {
+        log.info("Получен запрос DELETE /users/{}/friends/{}", id, friendId);
+        userService.removeFriend(id, friendId);
+    }
 
-        if (user.getEmail() != null && !user.getEmail().equalsIgnoreCase(existingUser.getEmail())) {
-            boolean isEmailDuplicated = users.values().stream()
-                    .anyMatch(u -> u.getId() != user.getId() && u.getEmail().equalsIgnoreCase(user.getEmail()));
-            if (isEmailDuplicated) {
-                log.warn("Валидация обновления пользователя не пройдена: Новый email уже используется другим пользователем. Пользователь: {}", user);
-                throw new ValidationException("Этот имейл уже используется.");
-            }
-        }
+    @GetMapping("/{id}/friends")
+    public List<User> getFriends(@PathVariable long id) {
+        log.info("Получен запрос GET /users/{}/friends", id);
+        return userService.getFriends(id);
+    }
 
-        if (user.getEmail() != null) {
-            existingUser.setEmail(user.getEmail());
-        }
-        if (user.getLogin() != null) {
-            existingUser.setLogin(user.getLogin());
-        }
-        if (user.getName() != null) {
-            existingUser.setName(user.getName());
-        } else if (user.getName() != null && user.getName().isBlank()) {
-            existingUser.setName(existingUser.getLogin());
-        }
-        if (user.getBirthday() != null) {
-            existingUser.setBirthday(user.getBirthday());
-        }
-
-        if (user.getName() != null && user.getName().isBlank()) {
-            existingUser.setName(existingUser.getLogin());
-        } else if (user.getName() != null) {
-            existingUser.setName(user.getName());
-        }
-
-        users.put(existingUser.getId(), existingUser);
-        log.info("Пользователь успешно обновлен: {}", existingUser);
-        return existingUser;
+    @GetMapping("/{id}/friends/common/{otherId}")
+    public List<User> getCommonFriends(@PathVariable long id, @PathVariable long otherId) {
+        log.info("Получен запрос GET /users/{}/friends/common/{}", id, otherId);
+        return userService.getCommonFriends(id, otherId);
     }
 }

@@ -3,6 +3,9 @@ package ru.yandex.practicum.model;
 import lombok.Data;
 
 import java.time.LocalDate;
+import java.util.HashSet;
+import java.util.Set;
+
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.PastOrPresent;
@@ -11,6 +14,7 @@ import jakarta.validation.constraints.Pattern;
 @Data
 public class User {
     private long id;
+    private final Set<Long> friends = new HashSet<>();
 
     @NotBlank(message = "Электронная почта не может быть пустой.")
     @Email(message = "Некорректный формат электронной почты.")
