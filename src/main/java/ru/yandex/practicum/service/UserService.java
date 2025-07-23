@@ -37,7 +37,7 @@ public class UserService {
     }
 
     public User update(User user) {
-        findById(user.getId()); // проверка, что пользователь существует
+        findById(user.getId());
         return userStorage.update(user);
     }
 
