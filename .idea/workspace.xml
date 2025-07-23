@@ -5,12 +5,7 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="a5516d62-1cc3-45bc-a932-306a29203e8f" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/src/main/java/ru/yandex/practicum/controller/FilmController.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/ru/yandex/practicum/controller/UserController.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/ru/yandex/practicum/exception/ValidationException.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/ru/yandex/practicum/model/Film.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/ru/yandex/practicum/model/User.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/pom.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -53,7 +48,7 @@
     "Maven.Filmorate [package].executor": "Run",
     "RunOnceActivity.OpenProjectViewOnStart": "true",
     "RunOnceActivity.ShowReadmeOnStart": "true",
-    "git-widget-placeholder": "add-friends-likes",
+    "git-widget-placeholder": "add-database",
     "kotlin-language-version-configured": "true",
     "project.structure.last.edited": "Problems",
     "project.structure.proportion": "0.15234375",
