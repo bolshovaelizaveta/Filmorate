@@ -23,7 +23,6 @@ class FilmorateApplicationTests {
 
     @Test
     void contextLoads() {
-        // Контроллеры не должны быть null после загрузки
         assertNotNull(filmController, "FilmController должен быть создан Spring контекстом.");
         assertNotNull(userController, "UserController должен быть создан Spring контекстом.");
     }

@@ -7,7 +7,6 @@ import java.time.LocalDate;
 
 public class PastCinemaHistoryValidator implements ConstraintValidator<PastCinemaHistory, LocalDate> {
 
-    // Дата 28 декабря 1895 года
     private static final LocalDate CINEMA_BIRTHDAY = LocalDate.of(1895, 12, 28);
 
     @Override
@@ -19,7 +18,6 @@ public class PastCinemaHistoryValidator implements ConstraintValidator<PastCinem
         if (date == null) {
             return true;
         }
-        // Проверяем, что дата не раньше дня рождения кинематографа
         return !date.isBefore(CINEMA_BIRTHDAY);
     }
 }

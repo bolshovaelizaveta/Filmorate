@@ -11,6 +11,7 @@ import jakarta.validation.ValidatorFactory;
 
 import java.time.LocalDate;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -25,7 +26,6 @@ class UserValidationTest {
         validator = factory.getValidator();
     }
 
-    // Валидация пользователя
     @Test
     void userValidationSuccess() {
         User user = new User();
@@ -39,7 +39,6 @@ class UserValidationTest {
         assertTrue(violations.isEmpty(), "Должно быть 0 нарушений валидации для корректного пользователя");
     }
 
-    // Email не может быть пустым
     @Test
     void userEmailBlankValidationFails() {
         User user = new User();
@@ -55,7 +54,6 @@ class UserValidationTest {
                 "Сообщение об ошибке для пустого email неверно");
     }
 
-    // Email должен содержать символ '@'
     @Test
     void userEmailInvalidFormatValidationFails() {
         User user = new User();
@@ -71,7 +69,6 @@ class UserValidationTest {
                 "Сообщение об ошибке для неверного формата email неверно");
     }
 
-    // Логин не может быть пустым
     @Test
     void userLoginBlankValidationFails() {
         User user = new User();
@@ -83,15 +80,17 @@ class UserValidationTest {
         Set<ConstraintViolation<User>> violations = validator.validate(user);
 
         assertEquals(2, violations.size(), "Должно быть 2 нарушения для пустого логина");
-        assertTrue(violations.stream().anyMatch(v -> v.getMessage().equals("Логин не может быть пустым.")),
-                "Должно содержать сообщение 'Логин не может быть пустым.'");
-        assertTrue(violations.stream().anyMatch(v -> v.getMessage().equals("Логин не может содержать пробелы.")),
-                "Должно содержать сообщение 'Логин не может содержать пробелы.'");
-        assertEquals("Логин не может быть пустым.", violations.iterator().next().getMessage(),
-                "Сообщение об ошибке для пустого логина неверно");
+
+        Set<String> violationMessages = violations.stream()
+                .map(ConstraintViolation::getMessage)
+                .collect(Collectors.toSet());
+
+        assertTrue(violationMessages.contains("Логин не может быть пустым."),
+                "Должно содержаться сообщение о пустом логине.");
+        assertTrue(violationMessages.contains("Логин не может содержать пробелы."),
+                "Должно содержаться сообщение о пробелах в логине.");
     }
 
-    // Логин не должен содержать пробелы
     @Test
     void userLoginWithSpacesValidationFails() {
         User user = new User();
@@ -107,7 +106,6 @@ class UserValidationTest {
                 "Сообщение об ошибке для логина с пробелами неверно");
     }
 
-    // Дата рождения не может быть в будущем
     @Test
     void userBirthdayInFutureValidationFails() {
         User user = new User();
@@ -123,7 +121,6 @@ class UserValidationTest {
                 "Сообщение об ошибке для даты рождения в будущем неверно");
     }
 
-    // Имя для отображения может быть пустым
     @Test
     void userNameBlankValidationSuccess() {
         User user = new User();

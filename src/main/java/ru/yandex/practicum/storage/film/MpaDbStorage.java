@@ -25,7 +25,11 @@ public class MpaDbStorage implements MpaStorage {
     @Override
     public Optional<Mpa> findById(int id) {
         String sql = "SELECT * FROM mpa WHERE mpa_id = ?";
-        return jdbcTemplate.query(sql, this::mapRowToMpa, id).stream().findFirst();
+        try {
+            return Optional.ofNullable(jdbcTemplate.queryForObject(sql, this::mapRowToMpa, id));
+        } catch (org.springframework.dao.EmptyResultDataAccessException e) {
+            return Optional.empty();
+        }
     }
 
     private Mpa mapRowToMpa(ResultSet rs, int rowNum) throws SQLException {

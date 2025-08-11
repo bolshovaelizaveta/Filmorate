@@ -135,4 +135,8 @@ public class FilmDbStorage implements FilmStorage {
 
         return film;
     }
+
+    public JdbcTemplate getJdbcTemplate() {
+        return jdbcTemplate;
+    }
 }
