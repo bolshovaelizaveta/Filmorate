@@ -3,8 +3,8 @@ package ru.yandex.practicum.service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.exception.NotFoundException;
-import ru.yandex.practicum.exception.ValidationException;
 import ru.yandex.practicum.model.User;
+import ru.yandex.practicum.storage.user.UserDbStorage;
 import ru.yandex.practicum.storage.user.UserStorage;
 
 import java.util.Collection;
@@ -22,17 +22,6 @@ public class UserService {
     }
 
     public User create(User user) {
-        if (user.getName() == null || user.getName().isBlank()) {
-            user.setName(user.getLogin());
-        }
-
-        // проверка: есть ли уже пользователь с таким email
-        boolean isEmailDuplicated = userStorage.findAll().stream()
-                .anyMatch(u -> u.getEmail().equalsIgnoreCase(user.getEmail()));
-        if (isEmailDuplicated) {
-            throw new ValidationException("Этот email уже используется: " + user.getEmail());
-        }
-
         return userStorage.create(user);
     }
 
@@ -47,17 +36,15 @@ public class UserService {
     }
 
     public void addFriend(long userId, long friendId) {
-        User user = findById(userId);
-        User friend = findById(friendId);
-        user.getFriends().add(friendId);
-        friend.getFriends().add(userId);
+        findById(userId);
+        findById(friendId);
+        ((UserDbStorage) userStorage).addFriend(userId, friendId);
     }
 
     public void removeFriend(long userId, long friendId) {
-        User user = findById(userId);
-        User friend = findById(friendId);
-        user.getFriends().remove(friendId);
-        friend.getFriends().remove(userId);
+        findById(userId);
+        findById(friendId);
+        ((UserDbStorage) userStorage).removeFriend(userId, friendId);
     }
 
     public List<User> getFriends(long userId) {

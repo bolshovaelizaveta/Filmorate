@@ -6,6 +6,8 @@ import org.springframework.stereotype.Service;
 import ru.yandex.practicum.exception.NotFoundException;
 import ru.yandex.practicum.model.Film;
 import ru.yandex.practicum.storage.film.FilmStorage;
+import ru.yandex.practicum.storage.film.GenreStorage;
+import ru.yandex.practicum.storage.film.MpaStorage;
 
 import java.util.Collection;
 import java.util.List;
@@ -18,17 +20,44 @@ public class FilmService {
     private final FilmStorage filmStorage;
     private final UserService userService;
     private final JdbcTemplate jdbcTemplate;
+    private final MpaStorage mpaStorage;
+    private final GenreStorage genreStorage;
 
     public Collection<Film> findAll() {
         return filmStorage.findAll();
     }
 
     public Film create(Film film) {
+        if (film.getMpa() != null) {
+            mpaStorage.findById(film.getMpa().getId())
+                    .orElseThrow(() -> new NotFoundException("MPA с ID " + film.getMpa().getId() + " не найден."));
+        }
+
+        if (film.getGenres() != null) {
+            film.getGenres().forEach(genre ->
+                    genreStorage.findById(genre.getId())
+                            .orElseThrow(() -> new NotFoundException("Жанр с ID " + genre.getId() + " не найден."))
+            );
+        }
+
         return filmStorage.create(film);
     }
 
     public Film update(Film film) {
         findById(film.getId());
+
+        if (film.getMpa() != null) {
+            mpaStorage.findById(film.getMpa().getId())
+                    .orElseThrow(() -> new NotFoundException("MPA с ID " + film.getMpa().getId() + " не найден."));
+        }
+
+        if (film.getGenres() != null) {
+            film.getGenres().forEach(genre ->
+                    genreStorage.findById(genre.getId())
+                            .orElseThrow(() -> new NotFoundException("Жанр с ID " + genre.getId() + " не найден."))
+            );
+        }
+
         return filmStorage.update(film);
     }
 

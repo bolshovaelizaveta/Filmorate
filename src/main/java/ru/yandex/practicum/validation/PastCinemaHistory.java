@@ -9,8 +9,8 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-@Documented // Указывает, что этот Javadoc должен быть включен в сгенерированный Javadoc
-@Constraint(validatedBy = PastCinemaHistoryValidator.class) // Связывает аннотацию с её валидатором
+@Documented
+@Constraint(validatedBy = PastCinemaHistoryValidator.class)
 @Target({ElementType.FIELD, ElementType.PARAMETER})
 @Retention(RetentionPolicy.RUNTIME)
 public @interface PastCinemaHistory {

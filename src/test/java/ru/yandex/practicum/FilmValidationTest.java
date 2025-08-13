@@ -25,7 +25,6 @@ class FilmValidationTest {
         validator = factory.getValidator();
     }
 
-    // Валидация фильма
     @Test
     void filmValidationSuccess() {
         Film film = new Film();
@@ -39,7 +38,6 @@ class FilmValidationTest {
         assertTrue(violations.isEmpty(), "Должно быть 0 нарушений валидации для корректного фильма");
     }
 
-    // Название не может быть пустым
     @Test
     void filmNameBlankValidationFails() {
         Film film = new Film();
@@ -55,7 +53,6 @@ class FilmValidationTest {
                 "Сообщение об ошибке для пустого названия неверно");
     }
 
-    // Максимальная длина описания — 200 символов
     @Test
     void filmDescriptionTooLongValidationFails() {
         Film film = new Film();
@@ -71,7 +68,6 @@ class FilmValidationTest {
                 "Сообщение об ошибке для слишком длинного описания неверно");
     }
 
-    // Дата релиза — не раньше 28 декабря 1895 года
     @Test
     void filmReleaseDateTooEarlyValidationFails() {
         Film film = new Film();
@@ -87,7 +83,6 @@ class FilmValidationTest {
                 "Сообщение об ошибке для слишком ранней даты релиза неверно");
     }
 
-    // Продолжительность фильма должна быть положительным числом
     @Test
     void filmDurationNonPositiveValidationFails() {
         Film film = new Film();
